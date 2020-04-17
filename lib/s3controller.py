@@ -54,9 +54,11 @@ class uploadfile():
             if self.type.startswith('image'):
                 self.s3.meta.client.upload_file(self.url, Config.S3_BUCKET_NAME, self.name, ExtraArgs={
                                             "ACL": "public-read",
+                                            'ServerSideEncryption': 'AES256'
                                         })
                 self.s3.meta.client.upload_file("data/{}".format(self.thumbnail_url), Config.S3_BUCKET_NAME, self.thumbnail_url, ExtraArgs={
                                             "ACL": "public-read",
+                                            'ServerSideEncryption': 'AES256'
                                         })    
                 items = {"name": self.name,
                         "type": self.type,
@@ -76,6 +78,7 @@ class uploadfile():
             elif self.not_allowed_msg == '':
                 self.s3.meta.client.upload_file(self.url, Config.S3_BUCKET_NAME, self.name, ExtraArgs={
                                             "ACL": "public-read",
+                                            'ServerSideEncryption': 'AES256'
                                         })
                 items = {"name": self.name,
                         "type": self.type,
