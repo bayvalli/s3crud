@@ -1,0 +1,4 @@
+__pycache__/
+bin/
+python3.8/
+pyvenv.cfg

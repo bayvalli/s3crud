@@ -17,6 +17,7 @@ class Config(object):
     MAX_CONTENT_LENGTH = 50 * 1024 * 1024
     ALLOWED_EXTENSIONS = set(['txt', 'gif', 'png', 'jpg', 'jpeg', 'bmp', 'rar', 'zip', '7zip', 'doc', 'docx', 'pdf', 'mp4'])
     IGNORED_FILES = set(['.gitignore'])
+    API_GATEWAY_URL = 'https://bgbooc0j2l.execute-api.eu-west-3.amazonaws.com/beta'
 
 class ProductionConfig(Config):
     DEBUG = False

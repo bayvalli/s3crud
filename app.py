@@ -72,7 +72,7 @@ def upload():
     if request.method == 'POST':
         files = request.files['file']
         tablename = request.form.get('dynamo')
-        DYNAMODB_TABLENAME = "metadata" if (tablename == "" or tablename == "metadata") else tablename
+        DBTABLENAME = DYNAMODB_TABLENAME if (tablename == "" or tablename == DYNAMODB_TABLENAME) else tablename
 
         if files:
             filename = secure_filename(files.filename)
@@ -80,7 +80,7 @@ def upload():
             mime_type = files.content_type
 
             if not allowed_file(files.filename):
-                result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed", dbtablename=DYNAMODB_TABLENAME)
+                result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed", dbtablename=DBTABLENAME)
 
             else:
                 # save file to disk
@@ -95,7 +95,7 @@ def upload():
                 size = os.path.getsize(uploaded_file_path)
 
                 # return json for js call back
-                result = uploadfile(name=filename, type=mime_type, size=size, dbtablename=DYNAMODB_TABLENAME)
+                result = uploadfile(name=filename, type=mime_type, size=size, dbtablename=DBTABLENAME)
             
             return simplejson.dumps({"files": [result.get_file()]})
 
@@ -129,8 +129,9 @@ def delete(filename):
             obj.deleteUploaded()
 
             item = {'name': filename, 'md5': filehash}
-            dbitem = dynamodbctrl(item, DYNAMODB_TABLENAME)
-            dbitem.delete_item()
+            dbitem = dynamodbctrl(item)
+            dbitem.query_and_delete_item()
+
             if os.path.exists(file_thumb_path):
                 os.remove(file_thumb_path)
                 obj = deletefile("thumbnail/{}".format(filename))
@@ -139,17 +140,6 @@ def delete(filename):
             return simplejson.dumps({filename: 'True'})
         except:
             return simplejson.dumps({filename: 'False'})
-
-
-# serve static files
-@app.route("/thumbnail/<string:filename>", methods=['GET'])
-def get_thumbnail(filename):
-    return send_from_directory(app.config['THUMBNAIL_FOLDER'], filename=filename)
-
-
-@app.route("/data/<string:filename>", methods=['GET'])
-def get_file(filename):
-    return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER']), filename=filename)
 
 
 @app.route('/', methods=['GET', 'POST'])

@@ -3,3 +3,4 @@ Flask-Bootstrap
 simplejson
 Pillow
 boto3
+requests
